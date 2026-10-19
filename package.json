@@ -5,7 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "nodemon src/server.js",
-    "start": "node src/server.js"
+    "start": "node src/server.js",
+    "migrate:featured": "node src/migrations/001-add-featured-to-products.js"
+
+    
   },
   "keywords": [],
   "author": "",

@@ -7,13 +7,13 @@ export const getProducts = async (req, res) => {
 
     const {category} = req.query;
 
-    const filter = {};
+    let products;
 
-    if (category) {
-      filter.category = category;
+    if (category && category !== "all") {
+      products = await Product.find({ category });
+    } else {
+      products = await Product.find();
     }
-
-    const products = await Product.find(filter);
 
     res.status(200).json(products);
   } catch (error) {
