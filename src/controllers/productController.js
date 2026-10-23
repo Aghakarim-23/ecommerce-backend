@@ -1,4 +1,6 @@
 import Product from "../models/Product.js";
+import streamifier from "streamifier";
+import cloudinary from "../config/cloudinary.js";
 
 
 
@@ -48,7 +50,25 @@ export const getProductById = async (req, res) => {
 
 export const createProduct = async (req, res) => {
   try {
-    const product = await Product.create(req.body);
+    const result = await new Promise((resolve, reject) => {
+      const stream = cloudinary.uploader.upload_stream(
+        { folder: "products" },
+        (error, result) => {
+          if (error) {
+            reject(error);
+          } else {
+            resolve(result);
+          }
+        }
+      );
+
+      streamifier.createReadStream(req.file.buffer).pipe(stream);
+    });
+
+    const product = await Product.create({
+      ...req.body,
+      image: result.secure_url
+    });
 
     res.status(201).json(product);
   } catch (error) {
@@ -56,4 +76,5 @@ export const createProduct = async (req, res) => {
       message: error.message
     });
   }
-}
+};
+
